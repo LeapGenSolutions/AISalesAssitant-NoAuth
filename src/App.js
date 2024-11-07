@@ -3,11 +3,11 @@ import React from "react";
 import { AuthProvider } from "../src/helpers/AuthContext";
 // import { AuthProvider, AuthContext } from "../src/helpers/AuthContext";
 import Dashboard from "../src/pages/Dashboard";
-import Login from "../src/pages/Login";
+// import Login from "../src/pages/Login";
 // import { loginRequest } from "./authConfig";
 // import { callMsGraph } from "./graph";
 // import { ProfileData } from "./components/ProfileData";
-import { useIsAuthenticated } from "@azure/msal-react";
+// import { useIsAuthenticated } from "@azure/msal-react";
 
 // import {
 //   // AuthenticatedTemplate,
@@ -50,7 +50,7 @@ import { useIsAuthenticated } from "@azure/msal-react";
 // };
 
 function App() {
-  const isAuthenticated = useIsAuthenticated();
+  // const isAuthenticated = useIsAuthenticated();
   return <Dashboard /> 
 }
 
