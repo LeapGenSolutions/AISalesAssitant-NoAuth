@@ -5,7 +5,6 @@ import {
   FaWindowMinimize,
   FaWindowMaximize,
 } from "react-icons/fa";
-import Logo from "../assets/Past-present-future.png";
 
 function ChatBox() {
 
@@ -37,7 +36,6 @@ function ChatBox() {
           ) : (
             <div className="flex flex-row gap-6 items-center">
               <FaWindowMinimize className="w-5 h-5" />
-              <img src={Logo} alt="" className="h-5 w-5" />
             </div>
           )}
         </button>

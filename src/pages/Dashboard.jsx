@@ -45,8 +45,6 @@ function Dashboard() {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
             />
-            {/* <AssetPerformance />
-        <SpendingChart /> */}
           </div>
         </main>
       )}

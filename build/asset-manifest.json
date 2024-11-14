@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.727ab03a.css",
-    "main.js": "/static/js/main.39d96fcd.js",
+    "main.css": "/static/css/main.2f0c52ff.css",
+    "main.js": "/static/js/main.d58e5a26.js",
     "static/js/453.20f5b23a.chunk.js": "/static/js/453.20f5b23a.chunk.js",
     "static/media/Past-present-future.png": "/static/media/Past-present-future.c84c8283261a7d8817d7.png",
     "static/media/Postal-Heritage.png": "/static/media/Postal-Heritage.4af4fdcd1ff0da164c5a.png",
     "static/media/Full-Logo.png": "/static/media/Full-Logo.525d796f11abd4bd75fd.png",
     "index.html": "/index.html",
     "static/media/back_icon.svg": "/static/media/back_icon.e1c88fcc6bf7feb9bf929c87cf915989.svg",
-    "main.727ab03a.css.map": "/static/css/main.727ab03a.css.map",
-    "main.39d96fcd.js.map": "/static/js/main.39d96fcd.js.map",
+    "main.2f0c52ff.css.map": "/static/css/main.2f0c52ff.css.map",
+    "main.d58e5a26.js.map": "/static/js/main.d58e5a26.js.map",
     "453.20f5b23a.chunk.js.map": "/static/js/453.20f5b23a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.727ab03a.css",
-    "static/js/main.39d96fcd.js"
+    "static/css/main.2f0c52ff.css",
+    "static/js/main.d58e5a26.js"
   ]
 }
