@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { CosmosClient } from '@azure/cosmos';
+import { AuthContext } from "../helpers/AuthContext";
 
 const client = new CosmosClient({
   endpoint: process.env.REACT_APP_COSMOS_DB_URI,
@@ -15,7 +16,7 @@ function Admin({ activeTab }) {
   const [selectionMessage, setSelectionMessage] = useState("");
   const loadingState = useState(true); // Add loading state
   const setLoading = loadingState[1]; // Add loading state
-
+  const { idTokenClaims } = useContext(AuthContext)
   const updateActiveVersion = async () => {
     try {
       // Step 1: Deactivate the current active version (check if it exists)
@@ -23,7 +24,7 @@ function Admin({ activeTab }) {
       if (currentActive) {
         await container.item(currentActive.id, currentActive.versionNumber).replace({ ...currentActive, active: 0 });
       }
-  
+
       // Step 2: Activate the selected version (ensure the selected version exists)
       const newActiveVersionId = selectedModel.versionNumber
       const newActiveVersion = models.find(v => v.versionNumber === newActiveVersionId);
@@ -68,24 +69,38 @@ function Admin({ activeTab }) {
 
   const handleChangeSelectModel = (event) => {
     const modelValue = event.target.value;
-    setSelectedModel(()=>models.filter((model)=>model.versionNumber===modelValue)[0]);
-    
+    setSelectedModel(() => models.filter((model) => model.versionNumber === modelValue)[0]);
+
   };
 
-  if(!selectedModel) 
+  if (!selectedModel)
     return <div>Loading</div>
   return (
     <div className="flex flex-col w-full p-4 items-center">
       <h2 className="text-3xl text-white font-bold my-4">
-        Welcome to Admin Portal - Ron Rogers
+        Welcome to Admin Portal - {idTokenClaims?.name}
       </h2>
 
       {activeTab === "Representation" && (
-        <iframe
-          title="admin-iframe"
-          src="https://www.google.com/"
-          className="w-full h-full m-4 rounded"
-        />
+        // <iframe
+        //   title="admin-iframe"
+        //   src="https://www.google.com/"
+        //   className="w-full h-full m-4 rounded"
+        // />
+        <div className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+          <div className="text-center space-y-6 p-8 bg-white bg-opacity-20 rounded-lg shadow-xl">
+            <h1 className="text-4xl font-extrabold sm:text-5xl">
+              🚀 Coming Soon
+            </h1>
+            <p className="text-lg sm:text-xl font-medium">
+              We are working hard on something amazing.
+            </p>
+            <p className="text-md sm:text-lg">
+              Stay tuned for updates!
+            </p>
+          </div>
+        </div>
+
       )}
 
       {activeTab === "Configuration" && (
@@ -99,7 +114,7 @@ function Admin({ activeTab }) {
               <label className="text-white font-semibold">Change Model:</label>
               <select
                 value={selectedModel && selectedModel.versionNumber}
-                onChange={(e)=>handleChangeSelectModel(e)}
+                onChange={(e) => handleChangeSelectModel(e)}
                 className="bg-[#FFF39F] text-black p-2 rounded-lg mt-2 w-full"
               >
                 {models.map((model, index) => (
@@ -133,7 +148,7 @@ function Admin({ activeTab }) {
                   className="flex justify-between items-center mb-2"
                 >
                   <span className="text-white">{model.versionNumber}</span>
-                  {model.active===1 && <button
+                  {model.active === 1 && <button
                     className="bg-green-500 text-white p-1 rounded-lg text-sm"
                   >
                     Active

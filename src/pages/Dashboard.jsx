@@ -50,7 +50,7 @@ function Dashboard() {
       )}
       {(activeTab === "Representation" ||
         activeTab === "Configuration" ||
-        activeTab === "Personalize") && <Admin activeTab={activeTab} />}
+        activeTab === "Customize") && <Admin activeTab={activeTab} />}
       <ChatPopup chats={chats} />
     </div>
   );

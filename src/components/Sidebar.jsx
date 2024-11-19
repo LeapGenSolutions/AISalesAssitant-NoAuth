@@ -1,21 +1,23 @@
 // src/components/Sidebar.js
-import React from "react";
+import React, { useContext } from "react";
 // import { AuthContext } from "../helpers/AuthContext";
 import StarImage from "../assets/Past-present-future.png";
 import GHEALogo from "../assets/Full-Logo.png";
 import BackIcon from "../assets/back_icon.svg";
 import HeritageLogo from "../assets/Postal-Heritage.png";
 import { useMsal } from "@azure/msal-react";
+import { AuthContext } from "../helpers/AuthContext";
 
 function Sidebar({ addChat, activeTab, setActiveTab }) {
   const { instance } = useMsal();
+  const {idTokenClaims, logout} = useContext(AuthContext)
 
   const handleLogout = (logoutType) => {
     if (logoutType === "redirect") {
       instance.logoutRedirect({
         postLogoutRedirectUri: "/",
       });
-      // logout();
+      logout();
     }
   };
 
@@ -24,13 +26,13 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
       <img className="h-15" src={GHEALogo} alt="" />
       {(activeTab === "User" || activeTab === "Profile") && (
         <div className="my-6">
-          <h4 className="text-lg font-semibold">Ron Rogers</h4>
+          <h4 className="text-lg font-semibold">{idTokenClaims?.name}</h4>
           <p className="text-sm">(Sales Agent)</p>
         </div>
       )}
       {(activeTab === "Representation" ||
         activeTab === "Configuration" ||
-        activeTab === "Personalize") && (
+        activeTab === "Customize") && (
         <img
           className="h-8 my-4"
           src={BackIcon}

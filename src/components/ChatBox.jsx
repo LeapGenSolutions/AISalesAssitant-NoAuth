@@ -52,7 +52,7 @@ function ChatBox() {
         className="chatbox-window"
         style={{ height: "100%", width: "100%", visibility: isChatMinimized ? 'hidden' : "visible" }}>
         <iframe title="chat-window-iframe"
-        src="https://webapp-frontend-gy4phravzt2ak-staging.azurewebsites.net/" 
+        src={process.env.REACT_APP_IFRAME_URI} 
         height="100%" 
         width="100%"></iframe>
       </div>
