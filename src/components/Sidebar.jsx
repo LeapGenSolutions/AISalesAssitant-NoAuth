@@ -42,7 +42,7 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
       )}
       {activeTab === "Representation" ||
       activeTab === "Configuration" ||
-      activeTab === "Personalize" ? (
+      activeTab === "Customize" ? (
         <nav className="space-y-4">
           <button
             onClick={() => setActiveTab("Representation")}
@@ -65,14 +65,14 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
             Configuration
           </button>
           <button
-            onClick={() => setActiveTab("Personalize")}
+            onClick={() => setActiveTab("Customize")}
             className={`text-left w-full p-2 ${
-              activeTab === "Personalize"
+              activeTab === "Customize"
                 ? "bg-[#FFF39F] text-black"
                 : "text-white"
             } rounded-lg `}
           >
-            Personalize
+            Customize
           </button>
         </nav>
       ) : (

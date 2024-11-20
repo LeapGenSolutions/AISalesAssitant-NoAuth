@@ -1,15 +1,19 @@
 // src/components/ChatInterface.js
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   FaTimes,
   FaWindowMinimize,
   FaWindowMaximize,
 } from "react-icons/fa";
+import {IoMdRefreshCircle} from "react-icons/io"
+import { AuthContext } from "../helpers/AuthContext";
 
 function ChatBox() {
 
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [isChatMinimized, setIsChatMinimized] = useState(false); // Minimize/maximize state
+  const { idTokenClaims } = useContext(AuthContext);
+  const [iFrameLink, setIFrameLink] = useState(process.env.REACT_APP_IFRAME_URI+`/?name=${idTokenClaims?.name}&preferred_username=${idTokenClaims?.name}`)
 
   const handleCloseChat = () => {
     setIsChatOpen(false);
@@ -17,6 +21,13 @@ function ChatBox() {
 
   const handleMinimizeChat = () => {
     setIsChatMinimized(!isChatMinimized);
+  };
+  
+  const handleRefresh = () => {
+    setIFrameLink(null);
+    setTimeout(()=>{
+      setIFrameLink(process.env.REACT_APP_IFRAME_URI+`/?name=${idTokenClaims.name}&preferred_username=${idTokenClaims.name}`)
+    },2000)
   };
 
   if (!isChatOpen) return null;
@@ -40,6 +51,13 @@ function ChatBox() {
           )}
         </button>
         <button
+          onClick={handleRefresh}
+          className="text-gray-400 hover:text-red-500 transition focus:outline-none"
+        >
+          <IoMdRefreshCircle className="w-5 h-5" />
+        {/* <FaTimes className="w-5 h-5" /> */}
+        </button>
+        <button
           onClick={handleCloseChat}
           className="text-gray-400 hover:text-red-500 transition focus:outline-none"
         >
@@ -52,7 +70,7 @@ function ChatBox() {
         className="chatbox-window"
         style={{ height: "100%", width: "100%", visibility: isChatMinimized ? 'hidden' : "visible" }}>
         <iframe title="chat-window-iframe"
-        src={process.env.REACT_APP_IFRAME_URI} 
+        src={iFrameLink} 
         height="100%" 
         width="100%"></iframe>
       </div>
