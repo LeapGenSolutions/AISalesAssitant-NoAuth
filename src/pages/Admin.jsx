@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import { CosmosClient } from '@azure/cosmos';
 import { AuthContext } from "../helpers/AuthContext";
+import {
+  FaRocket,
+  FaTrash
+} from "react-icons/fa";
 
 const client = new CosmosClient({
   endpoint: process.env.REACT_APP_COSMOS_DB_URI,
@@ -105,6 +109,30 @@ function Admin({ activeTab }) {
     }
   };
 
+  const deleteModel = async (modelId, versionNumber) => {
+    setLoading(true);
+    try {
+      // Delete the model from Cosmos DB
+      await container.item(modelId, versionNumber).delete();
+  
+      // Update the state by filtering out the deleted model
+      setModels((prevModels) => prevModels.filter((model) => model.id !== modelId));
+      setSelectionMessage(`Model ${versionNumber} deleted successfully!`);
+      setTimeout(() => setSelectionMessage(""), 2000);
+  
+      // If the deleted model was the selected one, reset the selected model
+      if (selectedModel?.id === modelId) {
+        setSelectedModel(null);
+      }
+    } catch (error) {
+      console.error("Error deleting model:", error);
+      setSelectionMessage("Failed to delete model");
+      setTimeout(() => setSelectionMessage(""), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -119,7 +147,7 @@ function Admin({ activeTab }) {
       {activeTab === "Representation" && (
         <div className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
           <div className="text-center space-y-6 p-8 bg-white bg-opacity-20 rounded-lg shadow-xl">
-            <h1 className="text-4xl font-extrabold sm:text-5xl">🚀 Coming Soon</h1>
+            <h1 className="text-4xl font-extrabold sm:text-5xl"><FaRocket className="w-10 h-10"/> Coming Soon</h1>
             <p className="text-lg sm:text-xl font-medium">We are working hard on something amazing.</p>
             <p className="text-md sm:text-lg">Stay tuned for updates!</p>
           </div>
@@ -163,6 +191,12 @@ function Admin({ activeTab }) {
                     {model.active === 1 && (
                       <button className="bg-green-500 text-white p-1 rounded-lg text-sm">Active</button>
                     )}
+                    <button
+                          onClick={() => deleteModel(model.id, model.versionNumber)}
+                          className="bg-red-500 text-white p-2 rounded-lg text-sm"
+                        >
+                          <FaTrash className="w-3 h-3" />
+                        </button>
                   </li>
                 ))}
               </ul>
