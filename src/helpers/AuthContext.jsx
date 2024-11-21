@@ -9,17 +9,7 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = useIsAuthenticated();
   const { instance: msalInstance, accounts } = useMsal();
   const [idTokenClaims, setIdTokenClaims] = useState(null)
-
-
-  useEffect(() => {
-    // Update login state based on MSAL's isAuthenticated state
-    if(isAuthenticated){
-      fetchIdClaimToken()
-    }
-    setIsLoggedIn(isAuthenticated);
-  }, [isAuthenticated]);
-
-
+  
   const fetchIdClaimToken = async ()=>{
     const response = await msalInstance.acquireTokenSilent({
       scopes: process.env.REACT_APP_SCOPES.split(","),
@@ -31,6 +21,18 @@ export const AuthProvider = ({ children }) => {
     return response.idTokenClaims;
   }
 
+
+  useEffect(() => {
+    // Update login state based on MSAL's isAuthenticated state
+    if(isAuthenticated){
+      fetchIdClaimToken()
+    }
+    setIsLoggedIn(isAuthenticated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
+
+
+  
   const login = () => {
     // If needed, add additional login logic here.
     setIsLoggedIn(true);

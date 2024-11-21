@@ -85,14 +85,14 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
           >
             User
           </button>
-          <button
+          {idTokenClaims?.roles?.includes("AISalesAssistantAdmin") && <button
             onClick={() => setActiveTab("Representation")}
             className={`text-left w-full p-2 ${
               activeTab === "Admin" ? "bg-[#FFF39F] text-black" : "bg-[]"
             } rounded-lg `}
           >
             Admin
-          </button>
+          </button>}
           <button
             onClick={() => setActiveTab("Profile")}
             className={`text-left w-full p-2 ${
