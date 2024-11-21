@@ -1,18 +1,38 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from "react";
-import { useIsAuthenticated } from "@azure/msal-react";
+import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isAuthenticated = useIsAuthenticated();
+  const { instance: msalInstance, accounts } = useMsal();
+  const [idTokenClaims, setIdTokenClaims] = useState(null)
+  
+  const fetchIdClaimToken = async ()=>{
+    const response = await msalInstance.acquireTokenSilent({
+      scopes: process.env.REACT_APP_SCOPES.split(","),
+      // scopes: ["User.read"],
+      account: accounts[0],
+    })
+    setIdTokenClaims(response.idTokenClaims)
+    console.log(response.idTokenClaims);    
+    return response.idTokenClaims;
+  }
+
 
   useEffect(() => {
     // Update login state based on MSAL's isAuthenticated state
+    if(isAuthenticated){
+      fetchIdClaimToken()
+    }
     setIsLoggedIn(isAuthenticated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
+
+  
   const login = () => {
     // If needed, add additional login logic here.
     setIsLoggedIn(true);
@@ -25,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, idTokenClaims }}>
       {children}
     </AuthContext.Provider>
   );

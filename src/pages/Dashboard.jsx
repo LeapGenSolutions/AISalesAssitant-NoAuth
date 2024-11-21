@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatPopup from "../components/ChatPopup";
 import Admin from "./Admin";
+import GEHAGrey from "../assets/GHEA-grey.png"
 
 function Dashboard() {
   const [chats, setChats] = useState([]);
-  const [input, setInput] = useState("");
+  // const [input, setInput] = useState("");
   const [activeTab, setActiveTab] = useState("User");
 
   const addChat = () => {
@@ -13,15 +14,15 @@ function Dashboard() {
   };
 
   // Handle user input change
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
+  // const handleInputChange = (e) => {
+  //   setInput(e.target.value);
+  // };
 
-  // Handle "Enter" key press to send message
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-    }
-  };
+  // // Handle "Enter" key press to send message
+  // const handleKeyPress = (e) => {
+  //   if (e.key === "Enter") {
+  //   }
+  // };
 
   return (
     <div className="flex bg-[#00172F] min-h-screen">
@@ -37,20 +38,13 @@ function Dashboard() {
           </h1>
 
           <div className="w-full">
-            <input
-              type="text"
-              className="flex-1 w-full bg-transparent border border-[#eee] rounded-lg py-2 px-4 focus:outline-none text-white placeholder-[#999]"
-              placeholder="Search..."
-              value={input}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-            />
+            <img src={GEHAGrey} height={30} alt="" />
           </div>
         </main>
       )}
       {(activeTab === "Representation" ||
         activeTab === "Configuration" ||
-        activeTab === "Personalize") && <Admin activeTab={activeTab} />}
+        activeTab === "Customize") && <Admin activeTab={activeTab} />}
       <ChatPopup chats={chats} />
     </div>
   );
