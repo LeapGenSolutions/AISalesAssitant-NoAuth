@@ -16,8 +16,7 @@ export const AuthProvider = ({ children }) => {
       // scopes: ["User.read"],
       account: accounts[0],
     })
-    setIdTokenClaims(response.idTokenClaims)
-    console.log(response.idTokenClaims);    
+    setIdTokenClaims(response.idTokenClaims);  
     return response.idTokenClaims;
   }
 

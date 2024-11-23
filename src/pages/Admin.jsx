@@ -5,6 +5,7 @@ import {
   FaRocket,
   FaTrash
 } from "react-icons/fa";
+import Customize from "../components/Customize";
 
 const client = new CosmosClient({
   endpoint: process.env.REACT_APP_COSMOS_DB_URI,
@@ -87,7 +88,7 @@ function Admin({ activeTab }) {
     setLoading(true);
     try {
       const newModel = {
-        id: `${models.length+1}`, // Unique ID
+        id: `${models.length + 1}`, // Unique ID
         versionNumber: newModelVersion,
         active: 0, // Default to inactive
       };
@@ -114,12 +115,12 @@ function Admin({ activeTab }) {
     try {
       // Delete the model from Cosmos DB
       await container.item(modelId, versionNumber).delete();
-  
+
       // Update the state by filtering out the deleted model
       setModels((prevModels) => prevModels.filter((model) => model.id !== modelId));
       setSelectionMessage(`Model ${versionNumber} deleted successfully!`);
       setTimeout(() => setSelectionMessage(""), 2000);
-  
+
       // If the deleted model was the selected one, reset the selected model
       if (selectedModel?.id === modelId) {
         setSelectedModel(null);
@@ -132,7 +133,7 @@ function Admin({ activeTab }) {
       setLoading(false);
     }
   };
-  
+
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -141,13 +142,13 @@ function Admin({ activeTab }) {
         Welcome to Admin Portal - {idTokenClaims?.name}
       </h2>
       {selectionMessage && (
-                  <div className="mt-2 text-green-500 text-sm font-semibold">{selectionMessage}</div>
-                )}
+        <div className="mt-2 text-green-500 text-sm font-semibold">{selectionMessage}</div>
+      )}
 
       {activeTab === "Representation" && (
         <div className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
           <div className="text-center space-y-6 p-8 bg-white bg-opacity-20 rounded-lg shadow-xl">
-            <h1 className="text-4xl font-extrabold sm:text-5xl"><FaRocket className="w-10 h-10"/> Coming Soon</h1>
+            <h1 className="text-4xl font-extrabold sm:text-5xl"><FaRocket className="w-10 h-10" /> Coming Soon</h1>
             <p className="text-lg sm:text-xl font-medium">We are working hard on something amazing.</p>
             <p className="text-md sm:text-lg">Stay tuned for updates!</p>
           </div>
@@ -159,7 +160,7 @@ function Admin({ activeTab }) {
           <div className="flex w-full p-6 items-start justify-around items-stretch">
             {/* Left: Selected Model */}
             <div className="w-1/2 flex flex-col items-center pr-4 border-r">
-            
+
               <h3 className="text-2xl text-white font-semibold mb-4">Model Configuration</h3>
               <div className="w-full mb-4">
                 <label className="text-white font-semibold">Change Model:</label>
@@ -174,7 +175,7 @@ function Admin({ activeTab }) {
                     </option>
                   ))}
                 </select>
-                
+
               </div>
               <button onClick={updateActiveVersion} className="bg-[#FFF39F] text-black p-2 rounded-lg mt-4 w-full">
                 Update Model
@@ -192,11 +193,11 @@ function Admin({ activeTab }) {
                       <button className="bg-green-500 text-white p-1 rounded-lg text-sm">Active</button>
                     )}
                     <button
-                          onClick={() => deleteModel(model.id, model.versionNumber)}
-                          className="bg-red-500 text-white p-2 rounded-lg text-sm"
-                        >
-                          <FaTrash className="w-3 h-3" />
-                        </button>
+                      onClick={() => deleteModel(model.id, model.versionNumber)}
+                      className="bg-red-500 text-white p-2 rounded-lg text-sm"
+                    >
+                      <FaTrash className="w-3 h-3" />
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -222,6 +223,9 @@ function Admin({ activeTab }) {
             </div>
           </div>
         </>
+      )}
+      {activeTab === "Customize" && (
+        <Customize />
       )}
     </div>
   );
