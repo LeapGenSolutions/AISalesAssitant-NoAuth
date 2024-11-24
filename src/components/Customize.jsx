@@ -19,9 +19,7 @@ const Customize = () => {
         setLoading(true);
         try {
             const { resources } = await container.items.readAll().fetchAll();
-            setCustomizations(resources);
-            setSelectedCusotmization(resources[0])
-            setMultiTenantChecked(resources[0]?.multiTenant)           
+            setCustomizations(()=>[{displayName:"--None--"},...resources]);        
         } catch (error) {
             console.error('Error fetching versions:', error);
         } finally {
@@ -76,7 +74,7 @@ const Customize = () => {
                 <div className="w-full mb-4">
                     <label className="text-white font-semibold">Select User:</label>
                     <select
-                        value={selectedCusotmization?.displayName || ""}
+                        value={(selectedCusotmization && selectedCusotmization?.displayName) || "--None--"}
                         onChange={handleChangeSelectCustomization}
                         className="bg-[#FFF39F] text-black p-2 rounded-lg mt-2 w-full"
                     >
