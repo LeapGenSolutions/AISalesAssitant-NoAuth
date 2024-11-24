@@ -13,7 +13,7 @@ function ChatBox() {
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [isChatMinimized, setIsChatMinimized] = useState(false); // Minimize/maximize state
   const { idTokenClaims } = useContext(AuthContext);
-  const [iFrameLink, setIFrameLink] = useState(process.env.REACT_APP_IFRAME_URI+`/?name=${idTokenClaims?.name}&preferred_username=${idTokenClaims?.name}`)
+  const [iFrameLink, setIFrameLink] = useState(process.env.REACT_APP_IFRAME_URI+`/?name=${idTokenClaims?.name}&preferred_username=${idTokenClaims?.name}&multiturn=${idTokenClaims.multiTenant}`)
 
   const handleCloseChat = () => {
     setIsChatOpen(false);
@@ -26,7 +26,7 @@ function ChatBox() {
   const handleRefresh = () => {
     setIFrameLink(null);
     setTimeout(()=>{
-      setIFrameLink(process.env.REACT_APP_IFRAME_URI+`/?name=${idTokenClaims.name}&preferred_username=${idTokenClaims.name}`)
+      setIFrameLink(process.env.REACT_APP_IFRAME_URI+`/?name=${idTokenClaims.name}&preferred_username=${idTokenClaims.name}&multiturn=${idTokenClaims.multiTenant}`)
     },2000)
   };
 
