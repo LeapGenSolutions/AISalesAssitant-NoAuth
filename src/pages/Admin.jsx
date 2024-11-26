@@ -1,19 +1,16 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import { CosmosClient } from '@azure/cosmos';
 import { AuthContext } from "../helpers/AuthContext";
 import {
   FaRocket,
   FaTrash
 } from "react-icons/fa";
-import Customize from "../components/Customize";
+import {
+  fetchVersions,
+  addVersion,
+  deleteVersion,
+  activateVersion,
+} from "../helpers/VersionAPI";
 
-const client = new CosmosClient({
-  endpoint: process.env.REACT_APP_COSMOS_DB_URI,
-  key: process.env.REACT_APP_COSMOS_DB_PRIMARY_KEY,
-});
-
-const database = client.database('cosmosdb-db-gy4phravzt2ak');
-const container = database.container('VersionsContainer');
 
 function Admin({ activeTab }) {
   const [models, setModels] = useState([]);
@@ -23,45 +20,50 @@ function Admin({ activeTab }) {
   const { idTokenClaims } = useContext(AuthContext);
   const [newModelVersion, setNewModelVersion] = useState("");
 
-  // Function to fetch versions from the Cosmos DB
-  const fetchVersions = useCallback(async () => {
-    setLoading(true);
+  useEffect(() => {
+    loadVersions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  const loadVersions = useCallback(async () => {
     try {
-      const { resources } = await container.items.readAll().fetchAll();
-      setModels(resources);
-      const activeModel = resources.find((model) => model.active === 1);
-      setSelectedModel(activeModel || resources[0] || null);
-    } catch (error) {
-      console.error('Error fetching versions:', error);
+      const { data } = await fetchVersions();
+      setModels(data);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  },[]);
 
-  // Fetch versions on component mount
-  useEffect(() => {
-    fetchVersions();
-  }, [fetchVersions]);
-
-  // Function to update the active version
-  const updateActiveVersion = async () => {
-    if (!selectedModel) return;
-
-    setLoading(true);
+  const handleAddVersion = async () => {
+    if (!newModelVersion.trim()) return;
     try {
-      // Deactivate the current active version
-      const currentActive = models.find((v) => v.active === 1);
-      if (currentActive) {
-        await container.item(currentActive.id, currentActive.versionNumber).replace({ ...currentActive, active: 0 });
-      }
-
-      // Activate the selected version
-      await container.item(selectedModel.id, selectedModel.versionNumber).replace({ ...selectedModel, active: 1 });
-      setSelectionMessage(`Selected model: ${selectedModel.versionNumber}`);
+      await addVersion(newModelVersion);
+      await loadVersions()
+      setSelectionMessage("Model added successfully");
       setTimeout(() => setSelectionMessage(""), 2000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      // Refresh the list after update
-      fetchVersions();
+  const handleDeleteVersion = async (id, version) => {
+    try {
+      await deleteVersion(id, version);
+      setModels(models.filter((m) => m.id !== id));
+      await loadVersions()
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  // Function to update the active version
+  const handleActivateVersion = async () => {
+    if (!selectedModel) return;
+    setLoading(true);
+    try{
+      await activateVersion(selectedModel.id, selectedModel.versionNumber);
+      await loadVersions()
     } catch (error) {
       console.error('Error updating active version:', error);
       setSelectionMessage('Failed to update active version');
@@ -76,62 +78,6 @@ function Admin({ activeTab }) {
     const changedModel = models.find((model) => model.versionNumber === modelValue);
     setSelectedModel(changedModel || null);
     console.log("Model selected:", changedModel);
-  };
-
-  const addModel = async () => {
-    if (!newModelVersion.trim()) {
-      setSelectionMessage('Please enter a valid model version');
-      setTimeout(() => setSelectionMessage(""), 2000);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const newModel = {
-        id: `${models.length + 1}`, // Unique ID
-        versionNumber: newModelVersion,
-        active: 0, // Default to inactive
-      };
-
-      // Add to Cosmos DB
-      await container.items.create(newModel);
-
-      // Update the state with the new model
-      setModels((prevModels) => [...prevModels, newModel]);
-      setSelectionMessage(`Model ${newModelVersion} added successfully!`);
-      setNewModelVersion(""); // Clear the input field
-      setTimeout(() => setSelectionMessage(""), 2000);
-    } catch (error) {
-      console.error('Error adding model:', error);
-      setSelectionMessage('Failed to add model');
-      setTimeout(() => setSelectionMessage(""), 3000);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteModel = async (modelId, versionNumber) => {
-    setLoading(true);
-    try {
-      // Delete the model from Cosmos DB
-      await container.item(modelId, versionNumber).delete();
-
-      // Update the state by filtering out the deleted model
-      setModels((prevModels) => prevModels.filter((model) => model.id !== modelId));
-      setSelectionMessage(`Model ${versionNumber} deleted successfully!`);
-      setTimeout(() => setSelectionMessage(""), 2000);
-
-      // If the deleted model was the selected one, reset the selected model
-      if (selectedModel?.id === modelId) {
-        setSelectedModel(null);
-      }
-    } catch (error) {
-      console.error("Error deleting model:", error);
-      setSelectionMessage("Failed to delete model");
-      setTimeout(() => setSelectionMessage(""), 3000);
-    } finally {
-      setLoading(false);
-    }
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -177,7 +123,14 @@ function Admin({ activeTab }) {
                 </select>
 
               </div>
-              <button onClick={updateActiveVersion} className="bg-[#FFF39F] text-black p-2 rounded-lg mt-4 w-full">
+              <div className="w-full mb-4">
+                <label class="inline-flex items-center cursor-pointer" >
+                <input type="checkbox" value="" class="sr-only peer"/>
+                  <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <span class="ms-3 text-sm font-medium text-white">Multi-Turn</span>
+                </label>
+              </div>
+              <button onClick={handleActivateVersion} className="bg-[#FFF39F] text-black p-2 rounded-lg mt-4 w-full">
                 Update Model
               </button>
             </div>
@@ -193,7 +146,7 @@ function Admin({ activeTab }) {
                       <button className="bg-green-500 text-white p-1 rounded-lg text-sm">Active</button>
                     )}
                     <button
-                      onClick={() => deleteModel(model.id, model.versionNumber)}
+                      onClick={() => handleDeleteVersion(model.id, model.versionNumber)}
                       className="bg-red-500 text-white p-2 rounded-lg text-sm"
                     >
                       <FaTrash className="w-3 h-3" />
@@ -217,15 +170,12 @@ function Admin({ activeTab }) {
                   placeholder="Enter model version"
                 />
               </div>
-              <button onClick={addModel} className="bg-[#FFF39F] text-black p-2 rounded-lg mt-4 w-full">
+              <button onClick={handleAddVersion} className="bg-[#FFF39F] text-black p-2 rounded-lg mt-4 w-full">
                 Add Model
               </button>
             </div>
           </div>
         </>
-      )}
-      {activeTab === "Customize" && (
-        <Customize />
       )}
     </div>
   );
