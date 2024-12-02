@@ -5,7 +5,6 @@ import {
   FaRocket,
   FaTrash
 } from "react-icons/fa";
-import Customize from "../components/Customize";
 
 const client = new CosmosClient({
   endpoint: process.env.REACT_APP_COSMOS_DB_URI,
@@ -91,6 +90,7 @@ function Admin({ activeTab }) {
         id: `${models.length + 1}`, // Unique ID
         versionNumber: newModelVersion,
         active: 0, // Default to inactive
+        multiTurn:true
       };
 
       // Add to Cosmos DB
@@ -109,6 +109,15 @@ function Admin({ activeTab }) {
       setLoading(false);
     }
   };
+
+  const onMultiTurnChange = (e)=>{
+    const {checked} = e.target
+    console.log("Checkd vaue: "+ checked);
+    setSelectedModel((prev)=>({
+      ...prev,
+      multiTurn: checked
+    }))
+  }
 
   const deleteModel = async (modelId, versionNumber) => {
     setLoading(true);
@@ -177,6 +186,13 @@ function Admin({ activeTab }) {
                 </select>
 
               </div>
+              <div className="w-full mb-4">
+                <label class="inline-flex items-center cursor-pointer" >
+                  <input type="checkbox" value="" className="sr-only peer" checked={selectedModel.multiTurn} onChange={onMultiTurnChange} />
+                  <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <span class="ms-3 text-sm font-medium text-white">Multi-Turn</span>
+                </label>
+              </div>
               <button onClick={updateActiveVersion} className="bg-[#FFF39F] text-black p-2 rounded-lg mt-4 w-full">
                 Update Model
               </button>
@@ -223,9 +239,6 @@ function Admin({ activeTab }) {
             </div>
           </div>
         </>
-      )}
-      {activeTab === "Customize" && (
-        <Customize />
       )}
     </div>
   );

@@ -64,16 +64,6 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
           >
             Configuration
           </button>
-          <button
-            onClick={() => setActiveTab("Customize")}
-            className={`text-left w-full p-2 ${
-              activeTab === "Customize"
-                ? "bg-[#FFF39F] text-black"
-                : "text-white"
-            } rounded-lg `}
-          >
-            Customize
-          </button>
         </nav>
       ) : (
         <nav className="space-y-4">
