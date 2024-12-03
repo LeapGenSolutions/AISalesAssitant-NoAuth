@@ -1,6 +1,7 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from "react";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { CosmosClient } from "@azure/cosmos";
 
 export const AuthContext = createContext();
 
@@ -10,6 +11,13 @@ export const AuthProvider = ({ children }) => {
   const { instance: msalInstance, accounts } = useMsal();
   const [idTokenClaims, setIdTokenClaims] = useState(null)
 
+  const client = new CosmosClient({
+    endpoint: process.env.REACT_APP_COSMOS_DB_URI,
+    key: process.env.REACT_APP_COSMOS_DB_PRIMARY_KEY,
+  });
+  const database = client.database('cosmosdb-db-gy4phravzt2ak');
+  const container = database.container('VersionsContainer');
+
   const fetchIdClaimToken = async () => {
     const response = await msalInstance.acquireTokenSilent({
       scopes: process.env.REACT_APP_SCOPES.split(","),
@@ -17,8 +25,11 @@ export const AuthProvider = ({ children }) => {
       account: accounts[0],
     })
     if (response.idTokenClaims) {
+      const { resources } = await container.items.readAll().fetchAll();
+      const activeModel = resources.find((model) => model.active === 1);
       setIdTokenClaims({
-        ...response.idTokenClaims
+        ...response.idTokenClaims,
+        multiTenant: activeModel?.multiTurn
       })
     }
     return response.idTokenClaims;
@@ -46,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, idTokenClaims, setIdTokenClaims}}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, idTokenClaims, setIdTokenClaims }}>
       {children}
     </AuthContext.Provider>
   );

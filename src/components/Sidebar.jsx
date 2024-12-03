@@ -27,7 +27,7 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
       {(activeTab === "User" || activeTab === "Profile") && (
         <div className="my-6">
           <h4 className="text-lg font-semibold">{idTokenClaims?.name}</h4>
-          <p className="text-sm">(Sales Agent)</p>
+          <p className="text-sm">{idTokenClaims?.roles?.includes("AISalesAssistantAdmin") ? "Sales Admin": "Sales Agent User"}</p>
         </div>
       )}
       {(activeTab === "Representation" ||
