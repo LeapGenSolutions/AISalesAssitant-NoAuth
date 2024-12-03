@@ -31,8 +31,7 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
         </div>
       )}
       {(activeTab === "Representation" ||
-        activeTab === "Configuration" ||
-        activeTab === "Customize") && (
+        activeTab === "Configuration") && (
         <img
           className="h-8 my-4"
           src={BackIcon}
@@ -41,8 +40,7 @@ function Sidebar({ addChat, activeTab, setActiveTab }) {
         />
       )}
       {activeTab === "Representation" ||
-      activeTab === "Configuration" ||
-      activeTab === "Customize" ? (
+      activeTab === "Configuration" ? (
         <nav className="space-y-4">
           <button
             onClick={() => setActiveTab("Representation")}

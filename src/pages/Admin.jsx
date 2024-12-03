@@ -19,7 +19,7 @@ function Admin({ activeTab }) {
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectionMessage, setSelectionMessage] = useState("");
   const [isLoading, setLoading] = useState(true);
-  const { idTokenClaims } = useContext(AuthContext);
+  const { idTokenClaims, setIdTokenClaims } = useContext(AuthContext);
   const [newModelVersion, setNewModelVersion] = useState("");
 
   // Function to fetch versions from the Cosmos DB
@@ -30,6 +30,10 @@ function Admin({ activeTab }) {
       setModels(resources);
       const activeModel = resources.find((model) => model.active === 1);
       setSelectedModel(activeModel || resources[0] || null);
+      setIdTokenClaims((prev)=>({
+        ...prev,
+        multiTenant: activeModel?.multiTurn
+      }))
     } catch (error) {
       console.error('Error fetching versions:', error);
     } finally {
